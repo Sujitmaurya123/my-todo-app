@@ -41,3 +41,10 @@ li {
 button {
   margin-left: 10px;
 }
+
+.item{
+  display: flex;
+   flex-direction: column;
+  text-align: center;
+  justify-content: center;
+}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { deleteTask, editTask } from '../redux/actions';
+import { deleteTask, editTask, toggleTaskCompletion } from '../redux/actions';
 
 const TaskItem = ({ task }) => {
   const dispatch = useDispatch();
@@ -28,10 +28,14 @@ const TaskItem = ({ task }) => {
     }
   };
 
+  const handleToggleCompletion = () => {
+    dispatch(toggleTaskCompletion(task.id));
+  };
+
   return (
-    <li>
+    <li style={{ textDecoration: task.completed ? 'line-through' : 'none' }}>
       {isEditing ? (
-        <input 
+        <input
           type="text"
           value={editText}
           onChange={handleEditChange}
@@ -40,11 +44,12 @@ const TaskItem = ({ task }) => {
           autoFocus
         />
       ) : (
-        <span>
-          {task.text}
-        </span>
+        <span>{task.text}</span>
       )}
       <button onClick={() => setIsEditing(true)}>Edit</button>
+      <button onClick={handleToggleCompletion}>
+        {task.completed ? 'Unmark' : 'Complete'}
+      </button>
       <button onClick={handleDelete}>Delete</button>
     </li>
   );

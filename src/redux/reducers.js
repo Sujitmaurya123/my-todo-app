@@ -1,23 +1,36 @@
-import { ADD_TASK, DELETE_TASK, EDIT_TASK } from './actions';
+import { ADD_TASK, DELETE_TASK, EDIT_TASK, TOGGLE_TASK_COMPLETION } from './actions';
 
 const initialState = {
-    tasks: []
+    tasks: JSON.parse(localStorage.getItem('tasks')) || []
+};
+
+const saveToLocalStorage = (tasks) => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
 };
 
 const taskReducer = (state = initialState, action) => {
     switch (action.type) {
         case ADD_TASK:
-            const newTask = { id: Date.now(), text: action.payload.text };
-            return { ...state, tasks: [...state.tasks, newTask] };
+            const newTask = { id: Date.now(), text: action.payload.text, completed: false };
+            const updatedTasksAdd = [...state.tasks, newTask];
+            saveToLocalStorage(updatedTasksAdd);
+            return { ...state, tasks: updatedTasksAdd };
         case DELETE_TASK:
-            return { ...state, tasks: state.tasks.filter(task => task.id !== action.payload.id) };
+            const updatedTasksDelete = state.tasks.filter(task => task.id !== action.payload.id);
+            saveToLocalStorage(updatedTasksDelete);
+            return { ...state, tasks: updatedTasksDelete };
         case EDIT_TASK:
-            return {
-                ...state,
-                tasks: state.tasks.map(task =>
-                    task.id === action.payload.id ? { ...task, text: action.payload.newText } : task
-                )
-            };
+            const updatedTasksEdit = state.tasks.map(task =>
+                task.id === action.payload.id ? { ...task, text: action.payload.newText } : task
+            );
+            saveToLocalStorage(updatedTasksEdit);
+            return { ...state, tasks: updatedTasksEdit };
+        case TOGGLE_TASK_COMPLETION:
+            const updatedTasksToggle = state.tasks.map(task =>
+                task.id === action.payload.id ? { ...task, completed: !task.completed } : task
+            );
+            saveToLocalStorage(updatedTasksToggle);
+            return { ...state, tasks: updatedTasksToggle };
         default:
             return state;
     }
